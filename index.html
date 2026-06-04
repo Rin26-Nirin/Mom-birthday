@@ -1,458 +1,779 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Birthday คุณแม่</title>
-    <style>
-        /* นำพาเลทสีจาก image.png มาใช้เป็นหลัก */
-        :root {
-            --bg-dark-blue: #203F9A;
-            --bg-light-blue: #94C2DA;
-            --pink-accent: #E84797;
-            --pink-pastel: #E7A0CC;
-            --cream-white: #EFE8E0;
-            --steel-blue: #4E7CB2;
-            --wax-seal: #C5A059; /* สีทองสำหรับครั่งประทับตราตามเรฟ image_2.png */
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💌 A Letter for Mom</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600;700&family=Sarabun:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #94C2DA;
+    --paper: #F9F9F9;
+    --lace: #FAD0E6;
+    --seal: #A38044;
+    --seal-dark: #7a5f2e;
+    --pink: #E84797;
+    --pink-light: #FAD0E6;
+    --text: #3a2a2a;
+    --text-light: #7a6a6a;
+  }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Chakra Petch', 'Sarabun', sans-serif;
-        }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
-            background-color: var(--bg-light-blue);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            perspective: 1000px;
-        }
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(255,255,255,0.18) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(232,71,151,0.10) 0%, transparent 50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Sarabun', sans-serif;
+    overflow: hidden;
+  }
 
-        /* ข้อความแนะนำด้านบน */
-        .instruction {
-            font-size: 24px;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            margin-bottom: 30px;
-            text-align: center;
-            font-weight: bold;
-            animation: pulse 2s infinite;
-            z-index: 10;
-            padding: 0 20px;
-        }
+  /* ─── FLOATING DOTS BG ─── */
+  .bg-dots {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  }
+  .bg-dots span {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.18);
+    animation: floatDot linear infinite;
+  }
 
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.9; }
-            50% { transform: scale(1.05); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.9; }
-        }
+  @keyframes floatDot {
+    0%   { transform: translateY(0) scale(1); opacity: 0.7; }
+    50%  { opacity: 0.3; }
+    100% { transform: translateY(-110vh) scale(0.6); opacity: 0; }
+  }
 
-        /* ตู้จดหมาย (Mailbox) */
-        .mailbox-container {
-            position: relative;
-            width: 200px;
-            height: 250px;
-            cursor: pointer;
-            transition: transform 0.3s;
-            z-index: 5;
-        }
+  /* ─── ALERT BOX ─── */
+  #alertOverlay {
+    position: fixed; inset: 0;
+    background: rgba(100,160,200,0.55);
+    backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.5s ease;
+  }
 
-        .mailbox-container:hover {
-            transform: scale(1.05);
-        }
+  .alert-box {
+    background: var(--paper);
+    border-radius: 24px;
+    padding: 44px 40px 36px;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    box-shadow:
+      0 20px 60px rgba(60,40,80,0.18),
+      0 0 0 6px rgba(250,208,230,0.6),
+      0 0 0 12px rgba(232,71,151,0.12);
+    position: relative;
+    animation: popIn 0.45s cubic-bezier(0.34,1.56,0.64,1);
+  }
 
-        /* ตัวตู้จดหมาย */
-        .mailbox {
-            width: 100%;
-            height: 100%;
-            background-color: var(--pink-accent);
-            border-radius: 100px 100px 20px 20px;
-            position: relative;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            border: 5px solid white;
-        }
+  .alert-box::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 27px;
+    border: 2px dashed var(--lace);
+    pointer-events: none;
+  }
 
-        /* ช่องรับจดหมาย */
-        .mailbox-slot {
-            width: 140px;
-            height: 25px;
-            background-color: var(--bg-dark-blue);
-            border-radius: 10px;
-            position: absolute;
-            top: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
+  .alert-icon {
+    font-size: 52px;
+    display: block;
+    margin-bottom: 16px;
+    animation: swing 2s ease-in-out infinite;
+  }
 
-        /* ธงสีฟ้าพาสเทลด้านข้างตู้ */
-        .mailbox-flag {
-            width: 20px;
-            height: 80px;
-            background-color: var(--steel-blue);
-            position: absolute;
-            right: -25px;
-            top: 80px;
-            border-radius: 10px;
-            transform-origin: bottom center;
-            transition: transform 0.5s ease;
-            border: 3px solid white;
-        }
+  @keyframes swing {
+    0%,100% { transform: rotate(-8deg); }
+    50% { transform: rotate(8deg); }
+  }
 
-        .mailbox-flag.up {
-            transform: rotate(90deg);
-            background-color: var(--pink-pastel);
-        }
+  .alert-title {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--pink);
+    letter-spacing: 0.04em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
 
-        /* ซองจดหมาย (Envelope) - ได้แรงบันดาลใจจาก image_2.png */
-        .envelope-wrapper {
-            position: absolute;
-            width: 380px;
-            height: 260px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 20;
-            pointer-events: none;
-        }
+  .alert-text {
+    font-size: 1.08rem;
+    color: var(--text);
+    line-height: 1.7;
+    margin-bottom: 28px;
+    font-weight: 300;
+  }
 
-        .envelope-wrapper.show {
-            transform: translate(-50%, -50%) scale(1);
-            pointer-events: auto;
-        }
+  .alert-buttons {
+    display: flex; gap: 14px; justify-content: center;
+  }
 
-        /* ซองจดหมายสีแดงเข้มหรูหราอิงตามเรฟ */
-        .envelope {
-            width: 100%;
-            height: 100%;
-            background-color: #8b1c4b;
-            border-radius: 12px;
-            position: relative;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            cursor: pointer;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
+  .btn-accept {
+    padding: 12px 32px;
+    border: none; border-radius: 50px;
+    background: linear-gradient(135deg, #E84797, #f472b6);
+    color: white;
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(232,71,151,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn-accept:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(232,71,151,0.45);
+  }
+  .btn-accept:active { transform: scale(0.97); }
 
-        /* ฝาพับซองจดหมายด้านหลัง */
-        .envelope::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 0;
-            height: 0;
-            border-style: solid;
-            border-width: 130px 190px 0 190px;
-            border-color: #72133c transparent transparent transparent;
-            z-index: 2;
-            transition: transform 0.5s ease;
-            transform-origin: top center;
-        }
+  .btn-reject {
+    padding: 12px 28px;
+    border: 2px solid #ccc; border-radius: 50px;
+    background: #f0f0f0;
+    color: #999;
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-reject:hover { background: #e8e8e8; color: #777; }
 
-        /* ด้านล่างซองพับไขว้ */
-        .envelope::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 0;
-            border-style: solid;
-            border-width: 0 190px 140px 190px;
-            border-color: transparent #7a1642 #7a1642 #7a1642;
-            z-index: 1;
-        }
+  /* ─── SCENE ─── */
+  #scene {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  #scene.visible { opacity: 1; transform: translateY(0); }
 
-        /* ครั่งประทับตรา Wax Seal ตรงกลาง (จากไฟล์ image_2.png) */
-        .wax-seal {
-            position: absolute;
-            width: 65px;
-            height: 65px;
-            background-color: var(--wax-seal);
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 3;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #543d11;
-            font-size: 26px;
-            font-family: 'Times New Roman', serif;
-            font-weight: bold;
-            transition: all 0.4s ease;
-            border: 2px dashed rgba(0,0,0,0.1);
-        }
+  /* ─── ENVELOPE ─── */
+  .envelope-wrap {
+    position: relative;
+    width: 340px;
+    height: 240px;
+    cursor: pointer;
+    perspective: 800px;
+  }
 
-        .wax-seal::after {
-            content: "M";
-            transform: scaleX(1.1);
-        }
+  /* Back panel */
+  .env-back {
+    position: absolute; inset: 0;
+    background: var(--paper);
+    border-radius: 8px 8px 12px 12px;
+    box-shadow: 0 12px 40px rgba(60,40,80,0.18);
+    z-index: 1;
+  }
 
-        /* อนิเมชั่นเมื่อกดแกะตราประทับ */
-        .envelope-wrapper.opened .wax-seal {
-            transform: translate(-50%, -50%) scale(0);
-            opacity: 0;
-        }
+  .envelope-wrap {
+    overflow: hidden;
+  }
+  .envelope-wrap.open {
+    overflow: visible;
+  }
 
-        .envelope-wrapper.opened .envelope::before {
-            transform: rotateX(180px);
-            z-index: 0;
-        }
+  .env-back::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: 2px dashed var(--lace);
+    border-radius: 4px 4px 8px 8px;
+    pointer-events: none;
+  }
 
-        /* กระดาษจดหมายด้านใน */
-        .letter {
-            position: absolute;
-            width: 340px;
-            height: 220px;
-            background-color: var(--cream-white);
-            left: 20px;
-            top: 20px;
-            border-radius: 8px;
-            z-index: 1;
-            padding: 25px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
-            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
-            transform: translateY(0);
-            opacity: 0.7;
-            cursor: pointer;
-        }
+  /* 🛠️ แก้ไขปีกพับซ้าย ขวา และล่าง ให้ขนาดมาชนกันตรงกลางพอดีเป๊ะ */
+  .env-flap-left {
+    position: absolute;
+    top: 0; left: 0;
+    width: 0; height: 0;
+    border-top: 120px solid transparent;
+    border-bottom: 120px solid transparent;
+    border-left: 170px solid #ece4ec; /* ปรับเป็น 170px (ครึ่งนึงของ 340) */
+    z-index: 3; 
+  }
 
-        /* จังหวะที่ 1: กระดาษค่อยๆ เลื่อนโผล่ออกมาจากซอง */
-        .envelope-wrapper.opened .letter {
-            transform: translateY(-120px);
-            opacity: 1;
-            z-index: 4;
-        }
+  .env-flap-right {
+    position: absolute;
+    top: 0; right: 0;
+    width: 0; height: 0;
+    border-top: 120px solid transparent;
+    border-bottom: 120px solid transparent;
+    border-right: 170px solid #ece4ec; /* ปรับเป็น 170px */
+    z-index: 3; 
+  }
 
-        /* จังหวะที่ 2: กระดาษลอยเด่นขึ้นมาด้านหน้าเพื่ออ่าน */
-        .letter.popup-focus {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            width: 90%;
-            max-width: 550px;
-            height: auto;
-            min-height: 400px;
-            transform: translate(-50%, -50%) scale(1.1) !important;
-            z-index: 100;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-            border: 8px solid white;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            animation: paperAppear 0.5s ease-out forwards;
-        }
+  .env-flap-bottom {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0; height: 0;
+    border-left: 170px solid transparent;
+    border-right: 170px solid transparent;
+    border-bottom: 130px solid #f0e8f0; /* ดันความสูงขึ้นมาทับรอยต่อตรงกลาง */
+    z-index: 4; /* ให้อยู่บนสุดของปีกซ้ายขวา */
+    filter: drop-shadow(0 -2px 4px rgba(0,0,0,0.06));
+  }
 
-        @keyframes paperAppear {
-            0% { transform: translate(-50%, -40%) scale(0.9); }
-            100% { transform: translate(-50%, -50%) scale(1.1); }
-        }
+  /* Top flap – animated */
+  .env-flap-top {
+    position: absolute;
+    top: 0; left: 0;
+    width: 340px;
+    height: 135px;
+    transform-origin: top center;
+    transform-style: preserve-3d;
+    transition: transform 0.7s cubic-bezier(0.4,0,0.2,1), z-index 0s 0.4s;
+    z-index: 6;
+    pointer-events: none;
+  }
 
-        /* เนื้อหาจดหมาย */
-        .letter-content {
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            color: #333;
-            font-size: 14px;
-            line-height: 1.8;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
+  .env-flap-top .flap-triangle {
+    position: absolute;
+    top: 0; left: 0;
+    width: 0; height: 0;
+    border-left: 170px solid transparent;
+    border-right: 170px solid transparent;
+    border-top: 130px solid #ecdce8;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.08));
+  }
 
-        .letter.popup-focus .letter-content {
-            opacity: 1;
-        }
+  .env-flap-top .flap-triangle::before {
+    content: '';
+    position: absolute;
+    top: -130px; left: -155px;
+    width: 0; height: 0;
+    border-left: 155px solid transparent;
+    border-right: 155px solid transparent;
+    border-top: 120px dashed var(--lace);
+    opacity: 0.6;
+  }
 
-        .letter-header {
-            font-weight: bold;
-            font-size: 18px;
-            border-bottom: 2px dashed var(--pink-pastel);
-            padding-bottom: 8px;
-            margin-bottom: 15px;
-            color: var(--bg-dark-blue);
-        }
+  .envelope-wrap.open .env-flap-top {
+    transform: rotateX(180deg);
+    z-index: 1; 
+    transition: transform 0.7s cubic-bezier(0.4,0,0.2,1), z-index 0s 0.2s;
+  }
 
-        .letter-body {
-            flex-grow: 1;
-            font-size: 16px;
-            color: #444;
-            text-indent: 30px;
-            overflow-y: auto;
-            padding-right: 5px;
-        }
+  /* Wax seal */
+  .wax-seal {
+    position: absolute;
+    top: 90px; left: 50%;
+    transform: translateX(-50%);
+    width: 52px; height: 52px;
+    z-index: 7;
+    cursor: pointer;
+    transition: transform 0.3s ease, opacity 0.4s ease;
+  }
 
-        .letter-footer {
-            margin-top: 20px;
-            text-align: right;
-            border-top: 1px solid #ddd;
-            padding-top: 10px;
-            font-size: 15px;
-        }
+  .wax-seal .seal-circle {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #c9a055, var(--seal) 50%, var(--seal-dark));
+    box-shadow:
+      0 3px 10px rgba(100,70,20,0.4),
+      inset 0 1px 3px rgba(255,220,120,0.5),
+      inset 0 -2px 4px rgba(80,50,10,0.3);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
 
-        .sender-name {
-            font-weight: bold;
-            color: var(--pink-accent);
-            font-size: 17px;
-            margin-top: 5px;
-        }
+  .wax-seal .seal-circle::before {
+    content: '';
+    position: absolute; inset: 4px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,200,80,0.35);
+  }
 
-        /* ฉากหลังมืดลง */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.6);
-            z-index: 90;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.5s ease;
-        }
+  .wax-seal .seal-letter {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: rgba(255,245,200,0.95);
+    text-shadow: 0 1px 2px rgba(80,50,10,0.5);
+    user-select: none;
+  }
 
-        .overlay.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
+  .wax-seal:hover .seal-circle {
+    box-shadow:
+      0 5px 16px rgba(100,70,20,0.5),
+      inset 0 1px 3px rgba(255,220,120,0.6),
+      inset 0 -2px 4px rgba(80,50,10,0.3);
+  }
 
-        /* เอฟเฟกต์โปรยกระดาษสี */
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: var(--pink-pastel);
-            border-radius: 3px;
-            animation: fall var(--d) linear infinite;
-            top: -20px;
-            z-index: 1;
-        }
+  .envelope-wrap.open .wax-seal {
+    transform: translateX(-50%) scale(0);
+    opacity: 0;
+    pointer-events: none;
+  }
 
-        @keyframes fall {
-            0% { transform: translateY(0) rotate(0deg); left: var(--x); opacity: 1; }
-            100% { transform: translateY(105vh) rotate(360deg); left: calc(var(--x) + 50px); opacity: 0; }
-        }
-    </style>
-    <!-- นำเข้าฟอนต์ Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;700&family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+  /* ─── LETTER INSIDE ENVELOPE ─── */
+  .letter-peek {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%) translateY(0%);
+    width: 296px;
+    max-height: 220px;
+    background: var(--paper);
+    border-radius: 6px 6px 0 0;
+    z-index: 2; /* ซ่อนหลังปีกซองที่ตั้งไว้ z-index 3-4 เรียบร้อย */
+    overflow: hidden;
+    transition: transform 0.6s cubic-bezier(0.34,1.26,0.64,1) 0.5s, opacity 0.3s ease 0.5s;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .letter-peek.peeking {
+    transform: translateX(-50%) translateY(-55%);
+    pointer-events: auto;
+    cursor: pointer;
+    opacity: 1;
+  }
+
+  .letter-peek-inner {
+    padding: 20px 20px 8px;
+  }
+
+  .letter-peek-inner .peek-salutation {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--pink);
+    margin-bottom: 8px;
+  }
+
+  .letter-peek-inner p {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    line-height: 1.6;
+  }
+
+  /* ─── OVERLAY & CONFETTI ─── */
+  #overlay {
+    position: fixed; inset: 0;
+    background: rgba(30,18,40,0.7);
+    backdrop-filter: blur(3px);
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+  #overlay.active { opacity: 1; pointer-events: auto; }
+
+  /* ─── CONFETTI ─── */
+  #confettiCanvas {
+    position: fixed; inset: 0;
+    z-index: 11;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  #confettiCanvas.active { opacity: 1; }
+
+  /* ─── EXPANDED LETTER ─── */
+  #letterExpanded {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.3);
+    width: min(520px, 92vw);
+    max-height: 85vh;
+    background: var(--paper);
+    border-radius: 16px;
+    z-index: 20;
+    overflow-y: auto;
+    padding: 44px 40px 40px;
+    box-shadow:
+      0 30px 80px rgba(30,18,40,0.35),
+      0 0 0 8px rgba(250,208,230,0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.5s cubic-bezier(0.34,1.26,0.64,1), opacity 0.4s ease;
+  }
+
+  #letterExpanded::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: 2px dashed var(--lace);
+    border-radius: 12px;
+    pointer-events: none;
+  }
+
+  #letterExpanded.active {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Scrollbar styling */
+  #letterExpanded::-webkit-scrollbar { width: 5px; }
+  #letterExpanded::-webkit-scrollbar-track { background: transparent; }
+  #letterExpanded::-webkit-scrollbar-thumb { background: var(--lace); border-radius: 4px; }
+
+  .letter-date {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 0.78rem;
+    color: var(--text-light);
+    letter-spacing: 0.06em;
+    margin-bottom: 22px;
+  }
+
+  .letter-salutation {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+
+  .letter-body {
+    font-size: 0.98rem;
+    line-height: 2;
+    color: var(--text);
+    font-weight: 300;
+  }
+
+  .letter-body p { margin-bottom: 16px; }
+
+  .letter-body em {
+    font-style: italic;
+    color: var(--pink);
+    font-weight: 400;
+  }
+
+  .letter-divider {
+    width: 60px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--lace), transparent);
+    margin: 28px auto;
+  }
+
+  .letter-footer {
+    text-align: right;
+    margin-top: 28px;
+  }
+
+  .letter-footer .signoff {
+    font-size: 0.95rem;
+    color: var(--text-light);
+    font-style: italic;
+    margin-bottom: 6px;
+  }
+
+  .letter-footer .sender {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--pink);
+    text-shadow: 0 2px 10px rgba(232,71,151,0.25);
+  }
+
+  .letter-footer .sender-sub {
+    font-size: 0.78rem;
+    color: var(--text-light);
+    margin-top: 2px;
+  }
+
+  /* ─── HINT TEXT ─── */
+  .hint-text {
+    position: absolute;
+    bottom: -38px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.7);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes popIn {
+    from { transform: scale(0.7); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+
+  /* Hearts decoration */
+  .letter-hearts {
+    text-align: center;
+    font-size: 1.1rem;
+    letter-spacing: 8px;
+    margin: 6px 0 20px;
+    opacity: 0.6;
+  }
+</style>
 </head>
 <body>
 
-    <!-- ฉากหลังมืดเบลอ -->
-    <div class="overlay" id="overlay"></div>
+<!-- Background floating dots -->
+<div class="bg-dots" id="bgDots"></div>
 
-    <!-- ข้อความคำสั่งบอกใบ้คุณแม่ -->
-    <div class="instruction" id="instruction-text">📬 มีจดหมายส่งถึงคุณแม่ค่ะ ลองกดที่ตู้จดหมายดูสิคะ!</div>
-
-    <!-- 1. ตู้จดหมาย (Mailbox) -->
-    <div class="mailbox-container" id="mailbox-btn" onclick="deliverLetter()">
-        <div class="mailbox">
-            <div class="mailbox-slot"></div>
-            <div class="mailbox-flag" id="mailbox-flag"></div>
-        </div>
+<!-- Alert Overlay -->
+<div id="alertOverlay">
+  <div class="alert-box">
+    <span class="alert-icon">💌</span>
+    <div class="alert-title">มีจดหมายมาส่งจ่ะ!</div>
+    <div class="alert-text">มีจดหมายมาจ้า<br>จดหมายสำหรับคุณแม่…<br>เปิดอ่านไหม?</div>
+    <div class="alert-buttons">
+      <button class="btn-accept" id="btnAccept">เปิดอ่าน ✨</button>
+      <button class="btn-reject" id="btnReject">ไม่รับดีกว่า</button>
     </div>
+  </div>
+</div>
 
-    <!-- 2. ซองจดหมายและกระดาษด้านใน -->
-    <div class="envelope-wrapper" id="envelope-wrapper">
-        
-        <!-- กระดาษจดหมายซ่อนอยู่ด้านในซอง -->
-        <div class="letter" id="letter-paper" onclick="zoomLetter(event)">
-            <div class="letter-content">
-                <!-- คำขึ้นต้นจดหมายแบบไทย -->
-                <div class="letter-header">
-                    กราบเท้า คุณแม่ที่เคารพรักอย่างสูง
-                </div>
-                
-                <!-- ✏️ คุณรินพิมพ์แก้ข้อความอวยพรยาวๆ ในช่องด้านล่างนี้ได้เลยนะคะ ✏️ -->
-                <div class="letter-body">
-                    เนื่องในโอกาสวันคล้ายวันเกิดของคุณแม่ในปีนี้... 
-                    ขอให้แม่มีความสุข ร่างกายแข็งแรง กินข้าวอร่อยทุกมื้อ พักผ่อนให้เพียงพอ ถ้าว่างก็เก็บห้องบ้างเดี๋ยวรามันจะเกิดเอานะ ออกกำลังกายบ้าง นอนหลับฝันดีทุกคืน หนูกับน้องดูแลตัวเองได้ ไม่ต้องห่วง ตากับยายก็สบายดี
-                </div>
-                
-                <!-- คำลงท้ายและชื่อคนส่ง -->
-                <div class="letter-footer">
-                    ด้วยความเคารพรักและระลึกถึงคุณแม่ที่สุดในโลก
-                    <div class="sender-name">ริน (นิริน)</div>
-                </div>
-            </div>
-        </div>
+<!-- Main Scene -->
+<div id="scene">
+  <div style="position:relative;">
+    <div class="envelope-wrap" id="envelope">
 
-        <!-- ตัวซองจดหมายและตราประทับครั่งทอง (Wax Seal) ตามเรฟ image_2.png -->
-        <div class="envelope" id="envelope-case">
-            <div class="wax-seal" id="wax-seal-btn" onclick="openEnvelope(event)"></div>
+      <!-- Back of envelope -->
+      <div class="env-back"></div>
+
+      <!-- Side & bottom flaps (decorative) -->
+      <div class="env-flap-left"></div>
+      <div class="env-flap-right"></div>
+      <div class="env-flap-bottom"></div>
+
+      <!-- Letter peek (slides up between back & front) -->
+      <div class="letter-peek" id="letterPeek">
+        <div class="letter-peek-inner">
+          <div class="peek-salutation">คุณสุมาลี พุตติ, 🌸</div>
+          <p>ขอให้แม่มีความสุข ร่างกายแข็งแรง กินข้าวอร่อยทุกมื้อ พักผ่อนให้เพียงพอ</p>
         </div>
+      </div>
+
+      <!-- Top flap -->
+      <div class="env-flap-top" id="flapTop">
+        <div class="flap-triangle"></div>
+      </div>
+
+      <!-- Wax seal -->
+      <div class="wax-seal" id="waxSeal">
+        <div class="seal-circle">
+          <span class="seal-letter">S</span>
+        </div>
+      </div>
 
     </div>
+    <div class="hint-text" id="hintText">✦ กดที่ตราประทับเพื่อเปิดซอง ✦</div>
+  </div>
+</div>
 
-    <script>
-        const instruction = document.getElementById('instruction-text');
-        const flag = document.getElementById('mailbox-flag');
-        const mailboxBtn = document.getElementById('mailbox-btn');
-        const envelopeWrapper = document.getElementById('envelope-wrapper');
-        const letterPaper = document.getElementById('letter-paper');
-        const overlay = document.getElementById('overlay');
+<!-- Dark overlay (click to close) -->
+<div id="overlay"></div>
 
-        // จังหวะที่ 1: กดตู้จดหมาย
-        function deliverLetter() {
-            flag.classList.add('up');
-            setTimeout(() => {
-                envelopeWrapper.classList.add('show');
-                instruction.innerHTML = "✉️ เจอซองจดหมายแล้ว! ลองกดตรงตราประทับสีทองเพื่อแกะซองดูค่ะ";
-                mailboxBtn.style.pointerEvents = 'none';
-            }, 400);
-        }
+<!-- Confetti canvas -->
+<canvas id="confettiCanvas"></canvas>
 
-        // จังหวะที่ 2: กดตราประทับครั่ง
-        function openEnvelope(event) {
-            event.stopPropagation();
-            envelopeWrapper.classList.add('opened');
-            setTimeout(() => {
-                instruction.innerHTML = "📄 มีข้อความอยู่ข้างใน! ลองกดที่กระดาษจดหมายเพื่อเปิดอ่านชัด ๆ สิคะ ❤️";
-            }, 800);
-        }
+<!-- Expanded letter -->
+<div id="letterExpanded">
+  <div class="letter-date"> 5 มิถุนายน 2569 &nbsp;·&nbsp; อิอิ </div>
+  <div class="letter-salutation">คุณสุมาลี พุตติ, 🌸</div>
+  <div class="letter-hearts">♡ ♡ ♡</div>
 
-        // จังหวะที่ 3: กดที่ตัวกระดาษเพื่อขยายใหญ่
-        function zoomLetter(event) {
-            event.stopPropagation();
-            if (!letterPaper.classList.contains('popup-focus')) {
-                letterPaper.classList.add('popup-focus');
-                overlay.classList.add('show');
-                instruction.innerHTML = "✨ สุขสันต์วันเกิดค่ะคุณแม่ ✨";
-                createConfetti();
-            }
-        }
+  <div class="letter-body">
+   <p>ขอให้แม่มีความสุข ร่างกายแข็งแรง กินข้าวอร่อยทุกมื้อ พักผ่อนให้เพียงพอ ถ้าว่างก็เก็บห้องบ้างเดี๋ยวรามันจะเกิดเอานะ ออกกำลังกายบ้าง นอนหลับฝันดีทุกคืน หนูกับน้องดูแลตัวเองได้ ไม่ต้องห่วง ตากับยายก็สบายดี</p> 
+   <p>สุขสันต์วันเกิดนะแม่ 🎂✨</p>
+  </div>
 
-        // ฟังก์ชันสร้างกระดาษสีโปรย
-        function createConfetti() {
-            for (let i = 0; i < 40; i++) {
-                const confetti = document.createElement('div');
-                confetti.classList.add('confetti');
-                confetti.style.setProperty('--x', Math.random() * 100 + 'vw');
-                confetti.style.setProperty('--d', (Math.random() * 3 + 2) + 's');
-                
-                const colors = ['#E84797', '#E7A0CC', '#94C2DA', '#EFE8E0'];
-                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                
-                document.body.appendChild(confetti);
-            }
-        }
+  <div class="letter-divider"></div>
 
-        // กดพื้นที่มืดรอบๆ เพื่อย่อจดหมายเก็บลงซอง
-        overlay.onclick = function() {
-            letterPaper.classList.remove('popup-focus');
-            overlay.classList.remove('show');
-            instruction.innerHTML = "📄 กดที่กระดาษจดหมายอีกครั้งเพื่อเปิดอ่านได้เลยนะคะ";
-        }
-    </script>
+  <div class="letter-footer">
+    <div class="signoff">ด้วยรักและเคารพอย่างสูง,</div>
+    <div class="sender">ริน (นิริน) 💕</div>
+    </div>
+</div>
+
+<script>
+  // ─── Background dots ───
+  const bgDots = document.getElementById('bgDots');
+  for (let i = 0; i < 22; i++) {
+    const dot = document.createElement('span');
+    const size = Math.random() * 14 + 4;
+    dot.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      bottom:${-size}px;
+      animation-duration:${Math.random()*12+8}s;
+      animation-delay:${Math.random()*10}s;
+    `;
+    bgDots.appendChild(dot);
+  }
+
+  // ─── Alert buttons ───
+  document.getElementById('btnAccept').addEventListener('click', () => {
+    document.getElementById('alertOverlay').style.opacity = '0';
+    document.getElementById('alertOverlay').style.transition = 'opacity 0.4s ease';
+    setTimeout(() => {
+      document.getElementById('alertOverlay').style.display = 'none';
+      document.getElementById('scene').classList.add('visible');
+    }, 400);
+  });
+
+  document.getElementById('btnReject').addEventListener('click', () => {
+    alert("ไม่ได้น้าาา แม่ต้องกดรับจดหมายของหนูสิคะ! 😜❤️");
+  });
+
+  // ─── State ───
+  let state = 'closed'; // closed → open → peeking → expanded
+
+  const envelope   = document.getElementById('envelope');
+  const waxSeal    = document.getElementById('waxSeal');
+  const letterPeek = document.getElementById('letterPeek');
+  const overlay    = document.getElementById('overlay');
+  const letterExp  = document.getElementById('letterExpanded');
+  const canvas     = document.getElementById('confettiCanvas');
+  const hintText   = document.getElementById('hintText');
+  const ctx        = canvas.getContext('2d');
+
+  // ─── Step 3: Open envelope ───
+  waxSeal.addEventListener('click', () => {
+    if (state !== 'closed') return;
+    state = 'open';
+
+    envelope.classList.add('open');
+    hintText.textContent = '✦ กดที่จดหมายเพื่ออ่านข้อความ ✦';
+
+    document.body.style.overflow = 'hidden';
+
+    // After flap opens, peek the letter
+    setTimeout(() => {
+      letterPeek.classList.add('peeking');
+      state = 'peeking';
+    }, 600);
+  });
+
+  // ─── Step 4: Expand letter ───
+  function expandLetter() {
+    if (state !== 'peeking') return;
+    state = 'expanded';
+
+    overlay.classList.add('active');
+    canvas.classList.add('active');
+    letterExp.classList.add('active');
+    hintText.style.opacity = '0';
+
+    startConfetti();
+  }
+
+  envelope.addEventListener('click', () => {
+    if (state === 'peeking') expandLetter();
+  });
+
+  letterPeek.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (state === 'peeking') expandLetter();
+  });
+
+  // ─── Step 5: Close letter ───
+  overlay.addEventListener('click', () => {
+    if (state !== 'expanded') return;
+    state = 'peeking';
+
+    overlay.classList.remove('active');
+    canvas.classList.remove('active');
+    letterExp.classList.remove('active');
+    hintText.style.opacity = '1';
+
+    stopConfetti();
+  });
+
+  // ─── Confetti ───
+  let confettiParticles = [];
+  let confettiAnim = null;
+  let running = false;
+
+  const COLORS = ['#FAD0E6','#E84797','#94C2DA','#f9c8e0','#b8e0f7','#ffd6ec','#ffe4b5','#c8f7d4'];
+
+  function resizeCanvas() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  function createParticle() {
+    return {
+      x: Math.random() * canvas.width,
+      y: -10,
+      r: Math.random() * 7 + 3,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      speedY: Math.random() * 2.5 + 1.2,
+      speedX: (Math.random() - 0.5) * 1.5,
+      spin: (Math.random() - 0.5) * 0.2,
+      angle: Math.random() * Math.PI * 2,
+      shape: Math.random() > 0.5 ? 'circle' : 'rect',
+      wobble: Math.random() * 2,
+      wobbleSpeed: Math.random() * 0.05 + 0.02,
+      wobbleAngle: Math.random() * Math.PI * 2,
+    };
+  }
+
+  function drawParticle(p) {
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.angle);
+    ctx.fillStyle = p.color;
+    ctx.globalAlpha = 0.85;
+    if (p.shape === 'circle') {
+      ctx.beginPath();
+      ctx.arc(0, 0, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      ctx.fillRect(-p.r, -p.r * 0.5, p.r * 2, p.r);
+    }
+    ctx.restore();
+  }
+
+  function animateConfetti() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Spawn new ones
+    if (confettiParticles.length < 160) {
+      for (let i = 0; i < 3; i++) confettiParticles.push(createParticle());
+    }
+
+    confettiParticles = confettiParticles.filter(p => p.y < canvas.height + 20);
+
+    for (const p of confettiParticles) {
+      p.wobbleAngle += p.wobbleSpeed;
+      p.x += p.speedX + Math.sin(p.wobbleAngle) * p.wobble;
+      p.y += p.speedY;
+      p.angle += p.spin;
+      drawParticle(p);
+    }
+
+    if (running) confettiAnim = requestAnimationFrame(animateConfetti);
+  }
+
+  function startConfetti() {
+    running = true;
+    confettiParticles = [];
+    animateConfetti();
+  }
+
+  function stopConfetti() {
+    running = false;
+    cancelAnimationFrame(confettiAnim);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    confettiParticles = [];
+  }
+</script>
 </body>
 </html>
